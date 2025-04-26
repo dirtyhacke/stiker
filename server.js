@@ -74,13 +74,19 @@ const GREEN_TOKEN = process.env.GREENAPI_API_TOKEN;
 
 app.post('/api/send/:id', async (req, res) => {
   try {
-    const bill = await Bill.findById(req.params.id);
+    const billId = req.params.id;
+    console.log(`Request received for sending WhatsApp message for bill ID: ${billId}`);
+    
+    // Find the bill by ID
+    const bill = await Bill.findById(billId);
     if (!bill) {
       return res.status(404).json({ message: '❌ Bill not found' });
     }
 
+    // Prepare the reminder message
     const message = `Hello! Reminder from ${bill.cmName} (${bill.cmNumber}) - You owe ₹${bill.amount} for ${bill.type}. Due: ${bill.dueDate}`;
 
+    // Send WhatsApp message
     const response = await axios.post(
       `https://api.green-api.com/waInstance${GREEN_ID}/sendMessage/${GREEN_TOKEN}`,
       {
@@ -89,8 +95,10 @@ app.post('/api/send/:id', async (req, res) => {
       }
     );
 
+    // Return success response
     res.json({ message: '✅ WhatsApp message sent', response: response.data });
   } catch (error) {
+    console.error(`❌ Error sending WhatsApp: ${error.message}`);
     res.status(500).json({ message: '❌ Error sending WhatsApp', error: error.message });
   }
 });
