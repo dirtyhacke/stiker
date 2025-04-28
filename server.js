@@ -13,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Serve static files from /public
+// Serve static files from /public (optional if you have public folder)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB Atlas connection
@@ -36,6 +36,8 @@ const BillSchema = new mongoose.Schema({
   cmNumber: String,
 });
 const Bill = mongoose.model('Bill', BillSchema);
+
+// API Routes
 
 // Save bill
 app.post('/api/save', async (req, res) => {
@@ -74,19 +76,13 @@ const GREEN_TOKEN = process.env.GREENAPI_API_TOKEN;
 
 app.post('/api/send/:id', async (req, res) => {
   try {
-    const billId = req.params.id;
-    console.log(`Request received for sending WhatsApp message for bill ID: ${billId}`);
-    
-    // Find the bill by ID
-    const bill = await Bill.findById(billId);
+    const bill = await Bill.findById(req.params.id);
     if (!bill) {
       return res.status(404).json({ message: '❌ Bill not found' });
     }
 
-    // Prepare the reminder message
     const message = `Hello! Reminder from ${bill.cmName} (${bill.cmNumber}) - You owe ₹${bill.amount} for ${bill.type}. Due: ${bill.dueDate}`;
 
-    // Send WhatsApp message
     const response = await axios.post(
       `https://api.green-api.com/waInstance${GREEN_ID}/sendMessage/${GREEN_TOKEN}`,
       {
@@ -95,10 +91,8 @@ app.post('/api/send/:id', async (req, res) => {
       }
     );
 
-    // Return success response
     res.json({ message: '✅ WhatsApp message sent', response: response.data });
   } catch (error) {
-    console.error(`❌ Error sending WhatsApp: ${error.message}`);
     res.status(500).json({ message: '❌ Error sending WhatsApp', error: error.message });
   }
 });
@@ -129,12 +123,12 @@ cron.schedule('0 9 * * 1', async () => {
   }
 });
 
-// Basic safe route
+// Safe check route
 app.get('/hey', (req, res) => {
   res.send('👋 Hey there! API is working.');
 });
 
-// Main route to serve index.html for any other route (updated wildcard route)
+// Serve frontend app (for frontend-backend same server deployment)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -142,5 +136,5 @@ app.get('*', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT} or Render Public URL`);
 });
