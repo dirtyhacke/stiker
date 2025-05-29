@@ -26,23 +26,80 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // MongoDB schema
 const BillSchema = new mongoose.Schema({
-  amount: String,
-  date: String,
-  phone: String,
-  dueDate: String,
-  note: String,
-  type: String,
-  cmName: String,
-  cmNumber: String,
+  amount: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  date: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  phone: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  dueDate: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  note: {
+    type: String,
+    trim: true
+  },
+  type: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  cmName: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  cmNumber: {
+    type: String,
+    required: true,
+    trim: true
+  },
 });
 const Bill = mongoose.model('Bill', BillSchema);
 
 // API Routes
 
-// Save bill
+// Save bill with validation
 app.post('/api/save', async (req, res) => {
   try {
-    const bill = new Bill(req.body);
+    const {
+      amount,
+      date,
+      phone,
+      dueDate,
+      note,
+      type,
+      cmName,
+      cmNumber
+    } = req.body;
+
+    // Basic validation
+    if (!amount || !date || !phone || !dueDate || !type || !cmName || !cmNumber) {
+      return res.status(400).json({ message: '❌ Missing required fields' });
+    }
+
+    const bill = new Bill({
+      amount,
+      date,
+      phone,
+      dueDate,
+      note: note || '',
+      type,
+      cmName,
+      cmNumber
+    });
+
     await bill.save();
     res.json({ message: '✅ Bill saved successfully' });
   } catch (error) {
@@ -128,8 +185,8 @@ app.get('/hey', (req, res) => {
   res.send('👋 Hey there! API is working.');
 });
 
-// Serve frontend app (for frontend-backend same server deployment)
-app.get('stickercutting', (req, res) => {
+// Serve frontend app (corrected route with leading slash)
+app.get('/stickercutting', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
