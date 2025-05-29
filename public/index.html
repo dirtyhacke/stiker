@@ -49,116 +49,122 @@
             <button class="delete" onclick="deletemsg()">Delete</button>
         </div>
     </div>
+<script>
+  // Change this to your deployed backend URL (replace with your actual backend URL)
+  const BACKEND_URL = "https://your-service-name.onrender.com";  // Your actual Render app URL here// <-- UPDATE THIS with your deployed backend URL
 
-    <script>
-      const saveBtn = document.querySelector(".btn-save");
-      const billContainer = document.getElementById("bill");
-    
-      saveBtn.addEventListener("click", async () => {
-        const data = {
-          amount: document.getElementById("amounts").value,
-          date: document.getElementById("dates1").value,
-          phone: document.getElementById("phone").value,
-          dueDate: document.getElementById("dates").value,
-          note: document.querySelector("textarea").value,
-          type: document.getElementById("type").value,
-          cmName: document.getElementById("cname").innerText,
-          cmNumber: document.getElementById("cnumber").innerText,
-        };
-    
-        try {
-          const res = await fetch("http://localhost:5000/api/save", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-          });
-    
-          if (!res.ok) {
-            throw new Error("Failed to save the bill");
-          }
-    
-          const result = await res.json();
-          alert(result.message);
-          fetchBills();  // Refresh bill list
-        } catch (error) {
-          console.error(error);
-          alert("Error: " + error.message);
-        }
+  const saveBtn = document.querySelector(".btn-save");
+  const billContainer = document.getElementById("bill");
+
+  saveBtn.addEventListener("click", async () => {
+    const data = {
+      amount: document.getElementById("amounts").value,
+      date: document.getElementById("dates1").value,
+      phone: document.getElementById("phone").value,
+      dueDate: document.getElementById("dates").value,
+      note: document.querySelector("textarea").value,
+      type: document.getElementById("type").value,
+      cmName: document.getElementById("cname").innerText,
+      cmNumber: document.getElementById("cnumber").innerText,
+    };
+
+    try {
+      // Updated fetch URL to use BACKEND_URL
+      const res = await fetch(`${BACKEND_URL}/api/save`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-    
-      async function fetchBills() {
-        try {
-          const res = await fetch("http://localhost:5000/api/bills");
-          if (!res.ok) {
-            throw new Error("Failed to fetch bills");
-          }
-    
-          const bills = await res.json();
-          billContainer.innerHTML = "";  // Clear the existing content
-    
-          bills.forEach((bill) => {
-            const billDiv = document.createElement("div");
-            billDiv.classList.add("bill");
-            billDiv.innerHTML = `
-              <p><strong>WorkType:</strong> ${bill.type}</p>
-              <p><strong>Amount:</strong> ₹${bill.amount}</p>
-              <p><strong>Due Date:</strong> ${bill.dueDate}</p>
-              <p><strong>Phone:</strong> ${bill.phone}</p>
-              <p><strong>Note:</strong> ${bill.note}</p>
-              <p><strong>BillingDate:</strong> ${bill.date}</p>
-              <p><strong>Company:</strong> ${bill.cmName}</p>
-              <p><strong>Owner:</strong> ${bill.cmNumber}</p>
-              <button class="sent" onclick="sendMsg('${bill._id}')">Send</button>
-              <button class="delete" onclick="deleteMsg('${bill._id}')">Delete</button>
-              <hr>
-            `;
-            billContainer.appendChild(billDiv);
-          });
-        } catch (error) {
-          console.error(error);
-          alert("Error fetching bills: " + error.message);
-        }
+
+      if (!res.ok) {
+        throw new Error("Failed to save the bill");
       }
-    
-      async function sendMsg(id) {
-        try {
-          const res = await fetch(`http://localhost:5000/api/send/${id}`, {
-            method: "POST",
-          });
-    
-          if (!res.ok) {
-            throw new Error("Failed to send message");
-          }
-    
-          const result = await res.json();
-          alert(result.message);
-        } catch (error) {
-          console.error(error);
-          alert("Error sending message: " + error.message);
-        }
+
+      const result = await res.json();
+      alert(result.message);
+      fetchBills();  // Refresh bill list
+    } catch (error) {
+      console.error(error);
+      alert("Error: " + error.message);
+    }
+  });
+
+  async function fetchBills() {
+    try {
+      // Updated fetch URL to use BACKEND_URL
+      const res = await fetch(`${BACKEND_URL}/api/bills`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch bills");
       }
-    
-      async function deleteMsg(id) {
-        try {
-          const res = await fetch(`http://localhost:5000/api/delete/${id}`, {
-            method: "DELETE",
-          });
-    
-          if (!res.ok) {
-            throw new Error("Failed to delete the bill");
-          }
-    
-          const result = await res.json();
-          alert(result.message);
-          fetchBills();  // Refresh bill list
-        } catch (error) {
-          console.error(error);
-          alert("Error deleting bill: " + error.message);
-        }
+
+      const bills = await res.json();
+      billContainer.innerHTML = "";  // Clear the existing content
+
+      bills.forEach((bill) => {
+        const billDiv = document.createElement("div");
+        billDiv.classList.add("bill");
+        billDiv.innerHTML = `
+          <p><strong>WorkType:</strong> ${bill.type}</p>
+          <p><strong>Amount:</strong> ₹${bill.amount}</p>
+          <p><strong>Due Date:</strong> ${bill.dueDate}</p>
+          <p><strong>Phone:</strong> ${bill.phone}</p>
+          <p><strong>Note:</strong> ${bill.note}</p>
+          <p><strong>BillingDate:</strong> ${bill.date}</p>
+          <p><strong>Company:</strong> ${bill.cmName}</p>
+          <p><strong>Owner:</strong> ${bill.cmNumber}</p>
+          <button class="sent" onclick="sendMsg('${bill._id}')">Send</button>
+          <button class="delete" onclick="deleteMsg('${bill._id}')">Delete</button>
+          <hr>
+        `;
+        billContainer.appendChild(billDiv);
+      });
+    } catch (error) {
+      console.error(error);
+      alert("Error fetching bills: " + error.message);
+    }
+  }
+
+  async function sendMsg(id) {
+    try {
+      // Updated fetch URL to use BACKEND_URL
+      const res = await fetch(`${BACKEND_URL}/api/send/${id}`, {
+        method: "POST",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to send message");
       }
-    
-      fetchBills();  // Initial fetch to load the bills
-    </script>
-    
+
+      const result = await res.json();
+      alert(result.message);
+    } catch (error) {
+      console.error(error);
+      alert("Error sending message: " + error.message);
+    }
+  }
+
+  async function deleteMsg(id) {
+    try {
+      // Updated fetch URL to use BACKEND_URL
+      const res = await fetch(`${BACKEND_URL}/api/delete/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete the bill");
+      }
+
+      const result = await res.json();
+      alert(result.message);
+      fetchBills();  // Refresh bill list
+    } catch (error) {
+      console.error(error);
+      alert("Error deleting bill: " + error.message);
+    }
+  }
+
+  // Initial fetch to load the bills
+  fetchBills();
+</script>
