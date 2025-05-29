@@ -50,7 +50,7 @@ img {
   border-radius: 8px;
 }
 
-.in,
+.input-field,
 .company_name,
 .phone,
 select {
@@ -145,7 +145,7 @@ option {
     font-size: 1.25rem;
   }
 
-  .in,
+  .input-field,
   .company_name,
   .phone,
   .btn-save,
