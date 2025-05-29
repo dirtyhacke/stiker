@@ -50,6 +50,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
 
 
 <script>
@@ -70,6 +71,26 @@ saveBtn.addEventListener("click", async () => {
 
     try {
         const res = await fetch("/api/save", {
+=======
+   <!----<script>
+      const saveBtn = document.querySelector(".btn-save");
+      const billContainer = document.getElementById("bill");
+    
+      saveBtn.addEventListener("click", async () => {
+        const data = {
+          amount: document.getElementById("amounts").value,
+          date: document.getElementById("dates1").value,
+          phone: document.getElementById("phone").value,
+          dueDate: document.getElementById("dates").value,
+          note: document.querySelector("textarea").value,
+          type: document.getElementById("type").value,
+          cmName: document.getElementById("cname").innerText,
+          cmNumber: document.getElementById("cnumber").innerText,
+        };
+    
+        try {
+          const res = await fetch("http://localhost:5000/api/save", {
+>>>>>>> 4bd61be (css updated)
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -147,6 +168,7 @@ async function deleteMsg(id) {
         if (!res.ok) {
             throw new Error("Failed to delete the bill");
         }
+<<<<<<< HEAD
 
         const result = await res.json();
         alert(result.message);
@@ -162,3 +184,10 @@ fetchBills(); // Initial call to load bills
 
 </body>
 </html>
+=======
+      }
+    
+      fetchBills();  // Initial fetch to load the bills
+    </script>   -->
+    
+>>>>>>> 4bd61be (css updated)
