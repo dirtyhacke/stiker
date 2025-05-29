@@ -129,7 +129,7 @@ app.get('/hey', (req, res) => {
 });
 
 // Serve frontend app (for frontend-backend same server deployment)
-app.get('stickercutting', (req, res) => {
+app.get('/stickercutting', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
